@@ -18,5 +18,5 @@ data "aws_ami" "ubuntu" {
     values = ["hvm"]
   }
 
-  owners = ["947985349339"]
+  owners = ["099720109477"]
 }
