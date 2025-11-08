@@ -55,6 +55,14 @@ echo "Waiting for Jenkins to initialize..."
 sleep 30
 
 sudo apt-get install -y libatomic1
+
+#need to install docker script first then add jenkins to docker group
+sudo usermod -aG docker jenkins
+
+sudo systemctl restart docker
+
+sudo systemctl restart jenkins
+
 # Display Jenkins initial admin password
 echo "============================================"
 echo "Jenkins Installation Completed Successfully!"
