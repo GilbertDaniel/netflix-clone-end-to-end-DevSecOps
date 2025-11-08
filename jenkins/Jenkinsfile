@@ -16,9 +16,8 @@ pipeline{
             steps{
                 git branch: 'main', url: 'https://github.com/GilbertDaniel/netflix-clone-end-to-end-DevSecOps.git'
             }
-        }       
-    }
-    stage('Install Dependencies') {
+        }
+        stage('Install Dependencies') {
             steps {
                 dir('Application-Code') {
                     // Install project dependencies (needed for OWASP + build)
@@ -28,7 +27,7 @@ pipeline{
         }
     stage("SonarQube Analysis") {
         steps {
-            dir('Application-Code') {
+            dir('application-code') {
                 withSonarQubeEnv('sonar-server') {
                     // Run SonarQube scanner using npx (no global install)
                     sh '''
@@ -44,7 +43,8 @@ pipeline{
                     '''
                 }
             }
-        }
+        }       
+    }    
     }
     post {
         always {
