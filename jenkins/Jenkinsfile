@@ -19,7 +19,7 @@ pipeline{
         }
         stage('Install Dependencies') {
             steps {
-                dir('Application-Code') {
+                dir('application-code') {
                     // Install project dependencies (needed for OWASP + build)
                     sh 'npm install'
                 }
