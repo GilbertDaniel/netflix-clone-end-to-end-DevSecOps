@@ -63,20 +63,20 @@ pipeline{
         // } 
         stage('TRIVY FS SCAN') {
             steps {
-                dir('Application-Code') {
+                dir('application-code') {
                     sh "trivy fs . > trivyfs.txt"
                 }
             }
         }
         stage("Docker Image Build"){
             steps{
-                dir('Application-Code') {
+                dir('application-code') {
                     script{
                        withDockerRegistry(credentialsId: 'docker', toolName: 'docker'){   
                            
                            withCredentials([string(credentialsId: 'tmdb-api', variable: 'TMDB_API_KEY')]) {
                                 sh """
-                                    docker build \
+                                    sudo docker build \
                                     --build-arg TMDB_V3_API_KEY=${TMDB_API_KEY} \
                                     -t netflix .
                                 """
@@ -88,11 +88,11 @@ pipeline{
         }
         stage("Docker Image Pushing"){
             steps{
-                dir('Application-Code') {
+                dir('application-code') {
                     script{
                        withDockerRegistry(credentialsId: 'docker', toolName: 'docker'){   
-                           sh "docker tag netflix avian19/netflix:latest "
-                           sh "docker push avian19/netflix:latest "
+                           sh "docker tag netflix gilbertdaniel/netflix:latest "
+                           sh "docker push gilbertdaniel/netflix:latest "
                         }
                     }
                 }
@@ -100,7 +100,7 @@ pipeline{
         }
         stage("TRIVY Image Scan"){
             steps{
-                sh "trivy image avian19/netflix:latest > trivyimage.txt" 
+                sh "trivy image gilbertdaniel/netflix:latest > trivyimage.txt" 
             }
         }   
     }
