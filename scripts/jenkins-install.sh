@@ -54,6 +54,7 @@ sudo systemctl status jenkins --no-pager
 echo "Waiting for Jenkins to initialize..."
 sleep 30
 
+sudo apt-get install -y libatomic1
 # Display Jenkins initial admin password
 echo "============================================"
 echo "Jenkins Installation Completed Successfully!"
