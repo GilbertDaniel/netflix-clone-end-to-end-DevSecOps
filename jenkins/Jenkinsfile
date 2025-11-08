@@ -18,6 +18,34 @@ pipeline{
             }
         }       
     }
+    stage('Install Dependencies') {
+            steps {
+                dir('Application-Code') {
+                    // Install project dependencies (needed for OWASP + build)
+                    sh 'npm install'
+                }
+            }
+        }
+    stage("SonarQube Analysis") {
+        steps {
+            dir('Application-Code') {
+                withSonarQubeEnv('sonar-server') {
+                    // Run SonarQube scanner using npx (no global install)
+                    sh '''
+                    echo "🔍 Starting SonarQube Analysis..."
+                    npx @sonar/scan \
+                    -Dsonar.projectKey=NetflixClone \
+                    -Dsonar.projectName=NetflixClone \
+                    -Dsonar.sources=src \
+                    -Dsonar.language=ts \
+                    -Dsonar.exclusions=dist/**,node_modules/**,public/** \
+                    -Dsonar.host.url=$SONAR_HOST_URL \
+                    -Dsonar.login=$SONAR_AUTH_TOKEN
+                    '''
+                }
+            }
+        }
+    }
     post {
         always {
             script {
