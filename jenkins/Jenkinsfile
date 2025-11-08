@@ -52,15 +52,57 @@ pipeline{
                     }
                 } 
             }
-        stage('OWASP Dependency Check') {
+        // stage('OWASP Dependency Check') {
+        //     steps {
+        //         dir('application-code') {
+        //             echo "🔒 Running OWASP Dependency Check..."
+        //             dependencyCheck additionalArguments: '--scan ./ --format XML --out .', odcInstallation: 'owasp-dp-check'
+        //             dependencyCheckPublisher pattern: '**/dependency-check-report.xml'
+        //         }
+        //     }
+        // } 
+        stage('TRIVY FS SCAN') {
             steps {
                 dir('Application-Code') {
-                    echo "🔒 Running OWASP Dependency Check..."
-                    dependencyCheck additionalArguments: '--scan ./ --format XML --out .', odcInstallation: 'owasp-dp-check'
-                    dependencyCheckPublisher pattern: '**/dependency-check-report.xml'
+                    sh "trivy fs . > trivyfs.txt"
                 }
             }
-        }    
+        }
+        stage("Docker Image Build"){
+            steps{
+                dir('Application-Code') {
+                    script{
+                       withDockerRegistry(credentialsId: 'docker', toolName: 'docker'){   
+                           
+                           withCredentials([string(credentialsId: 'tmdb-api', variable: 'TMDB_API_KEY')]) {
+                                sh """
+                                    docker build \
+                                    --build-arg TMDB_V3_API_KEY=${TMDB_API_KEY} \
+                                    -t netflix .
+                                """
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        stage("Docker Image Pushing"){
+            steps{
+                dir('Application-Code') {
+                    script{
+                       withDockerRegistry(credentialsId: 'docker', toolName: 'docker'){   
+                           sh "docker tag netflix avian19/netflix:latest "
+                           sh "docker push avian19/netflix:latest "
+                        }
+                    }
+                }
+            }
+        }
+        stage("TRIVY Image Scan"){
+            steps{
+                sh "trivy image avian19/netflix:latest > trivyimage.txt" 
+            }
+        }   
     }
     post {
         always {
