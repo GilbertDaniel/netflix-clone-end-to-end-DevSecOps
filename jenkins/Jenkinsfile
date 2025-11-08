@@ -14,7 +14,7 @@ pipeline{
         }
         stage('Checkout from Git'){
             steps{
-                git branch: 'master', url: 'https://github.com/GilbertDaniel/netflix-clone-end-to-end-DevSecOps.git'
+                git branch: 'main', url: 'https://github.com/GilbertDaniel/netflix-clone-end-to-end-DevSecOps.git'
             }
         }       
     }
