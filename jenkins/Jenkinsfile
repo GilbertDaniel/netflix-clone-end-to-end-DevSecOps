@@ -102,6 +102,21 @@ pipeline{
             steps{
                 sh "trivy image gilbertdaniel/netflix:latest > trivyimage.txt" 
             }
+        }
+
+        stage('Deploy to Kubernetes') {
+            steps {
+                script {
+                    dir('Kubernetes') {
+                        withKubeConfig(credentialsId: 'k8s') {
+                            sh 'kubectl apply -f deployment.yml'
+                            sh 'kubectl apply -f service.yml'
+                            sh 'kubectl get svc'
+                            sh 'kubectl get all'
+                        }
+                    }
+                }
+            }
         }   
     }
     post {
